@@ -9,12 +9,28 @@ import { AuthenticatedRequest } from "../middleware/auth";
 const router = Router();
 
 // Behaviour used when a decision can't be reached (timeout or no device
-// connected). "deny" (default) blocks the tool; "ask" defers to Claude Code's
-// normal in-terminal permission prompt. Set HOOK_FALLBACK_BEHAVIOR=ask to
-// avoid denying tools just because the watch was unreachable.
+// connected). Non-2xx status codes are non-blocking in Claude Code, so the
+// default 408 response already lets Claude fall back to its terminal prompt.
+// Set HOOK_FALLBACK_BEHAVIOR=ask to return 200 with a blocking "ask" decision
+// instead (forces Claude to explicitly ask the user).
 type FallbackBehavior = DecisionBehavior | "ask";
 const fallbackBehavior: FallbackBehavior =
   (process.env.HOOK_FALLBACK_BEHAVIOR as FallbackBehavior) || "deny";
+
+// --- Optional shared-secret auth (applied to ALL /hook routes) -----------
+// When HOOK_TOKEN is set, every /hook request must carry
+//    Authorization: Bearer <HOOK_TOKEN>
+// Wire this via setup-hooks.sh (which adds headers + allowedEnvVars).
+router.use((req, _res, next) => {
+  const hookToken = process.env.HOOK_TOKEN;
+  if (!hookToken) return next();
+  const authHeader = req.headers.authorization;
+  if (!authHeader || authHeader !== `Bearer ${hookToken}`) {
+    _res.status(401).json({ error: "Invalid hook token" });
+    return;
+  }
+  next();
+});
 
 const hookInputSchema = z.object({
   hook_event_name: z.string(),
@@ -45,16 +61,6 @@ const hookInputSchema = z.object({
  */
 router.post("/permission-request", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    // Validate auth token for hook requests
-    const hookToken = process.env.HOOK_TOKEN;
-    if (hookToken) {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || authHeader !== `Bearer ${hookToken}`) {
-        res.status(401).json({ error: "Invalid hook token" });
-        return;
-      }
-    }
-
     const parsed = hookInputSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid hook input", details: parsed.error.issues });

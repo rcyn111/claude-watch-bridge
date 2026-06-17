@@ -1,3 +1,10 @@
+// NOTE: Bonjour discovery is experimental and currently unused in the app.
+//       The bridge binds to 127.0.0.1 by default for security; to use Bonjour
+//       you must set HOST=0.0.0.0 on the bridge. When that is enabled, this
+//       file should be rewritten to use NetServiceBrowser + NetService for
+//       proper service resolution (the current NWBrowser skeleton does not
+//       resolve endpoints).  For now, enter your Mac's LAN IP manually.
+
 import Foundation
 import Network
 

@@ -37,6 +37,17 @@ case "$MODE" in
   global|*)  SETTINGS_FILE="$HOME/.claude/settings.json" ;;
 esac
 
+# --- Optional shared-secret auth header for hook endpoints ---------------
+# When HOOK_TOKEN is set, the generated hook config includes an Authorization
+# header and allowsEnvVars so Claude Code can read the token from the
+# environment.  Requires Claude Code ≥ 1.0.50 (http hooks with headers).
+if [ -n "${HOOK_TOKEN:-}" ]; then
+  HOOK_AUTH=',"headers":{"Authorization":"Bearer $HOOK_TOKEN"},"allowedEnvVars":["HOOK_TOKEN"]'
+  echo "Hook auth enabled — Claude Code will send Authorization: Bearer <HOOK_TOKEN>"
+else
+  HOOK_AUTH=""
+fi
+
 HOOK_CONFIG=$(cat <<EOF
 {
   "hooks": {
@@ -47,7 +58,7 @@ HOOK_CONFIG=$(cat <<EOF
           {
             "type": "http",
             "url": "${BRIDGE_URL}/hook/permission-request",
-            "timeout": ${HOOK_TIMEOUT},
+            "timeout": ${HOOK_TIMEOUT}${HOOK_AUTH},
             "statusMessage": "Awaiting approval on Apple Watch..."
           }
         ]
@@ -60,7 +71,7 @@ HOOK_CONFIG=$(cat <<EOF
           {
             "type": "http",
             "url": "${BRIDGE_URL}/hook/post-tool-use",
-            "timeout": 10
+            "timeout": 10${HOOK_AUTH}
           }
         ]
       }
@@ -71,7 +82,7 @@ HOOK_CONFIG=$(cat <<EOF
           {
             "type": "http",
             "url": "${BRIDGE_URL}/hook/stop",
-            "timeout": 10
+            "timeout": 10${HOOK_AUTH}
           }
         ]
       }

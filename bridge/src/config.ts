@@ -22,8 +22,6 @@ export const config = {
   tokenLength: parseInt(process.env.TOKEN_LENGTH || "32", 10), // bytes
   sseHeartbeatSeconds: parseInt(process.env.SSE_HEARTBEAT || "30", 10),
   logLevel: process.env.LOG_LEVEL || "info",
-  bonjourServiceName: process.env.BONJOUR_SERVICE_NAME || "claude-watch-bridge",
-  bonjourServiceType: "_claude-watch._tcp",
 
   // --- Operation / reliability ---
   // Grace window to wait for a phone/watch SSE client before giving up on a
