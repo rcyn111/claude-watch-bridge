@@ -10,13 +10,19 @@ class WatchWCSessionManager: NSObject, ObservableObject {
     @Published var requestHistory: [PermissionRequest] = []
     @Published var isReachable = false
     @Published var isActivated = false
+    /// Number of additional requests waiting in the queue (shown as a badge).
+    @Published var queueCount: Int = 0
 
-    /// Callback triggered when a new permission request arrives from the iOS app.
-    /// The callback receives the request and a reply handler that must be called with the decision.
+    /// Callback triggered when a new permission request needs to be shown.
+    /// Receives the request and a reply handler that the caller MUST call with
+    /// the decision.  The reply handler internally manages the queue — after
+    /// replying, the next queued request (if any) is automatically shown via
+    /// this same callback.
     var onPermissionRequest: ((PermissionRequest, @escaping (PermissionDecision) -> Void) -> Void)?
 
-    /// Current pending reply handler (only one request at a time)
-    private var pendingReply: (([String: Any]) -> Void)?
+    /// --- Queue internals -------------------------------------------------
+    private var requestQueue: [(PermissionRequest, ([String: Any]) -> Void)] = []
+    private var currentReply: (([String: Any]) -> Void)?
 
     override private init() {
         super.init()
@@ -24,14 +30,12 @@ class WatchWCSessionManager: NSObject, ObservableObject {
         WCSession.default.activate()
     }
 
-    /// Submit a decision and invoke the pending reply handler
+    /// Call this from the ViewModel when the user approves or denies.
     func submitDecision(_ decision: PermissionDecision) {
-        guard let reply = pendingReply else { return }
-
-        // Convert to WCSession message format
+        guard let reply = currentReply else { return }
         let message = decision.toWCMessage()
         reply(message)
-        pendingReply = nil
+        currentReply = nil
 
         // Move to history
         if let request = pendingRequest {
@@ -41,6 +45,34 @@ class WatchWCSessionManager: NSObject, ObservableObject {
             }
         }
         pendingRequest = nil
+
+        // Show next queued request, if any.
+        showNext()
+    }
+
+    /// Call this when the current request times out on the watch (auto-dismiss).
+    /// The iOS side will eventually time out on its own; we abandon the reply
+    /// handler and move on to the next queued request.
+    func timeoutCurrent() {
+        currentReply = nil
+        pendingRequest = nil
+        showNext()
+    }
+
+    /// Dequeue the next pending request and present it.
+    private func showNext() {
+        guard !requestQueue.isEmpty else {
+            queueCount = 0
+            return
+        }
+        let (request, replyHandler) = requestQueue.removeFirst()
+        queueCount = requestQueue.count
+        pendingRequest = request
+        currentReply = replyHandler
+        WKInterfaceDevice.current().play(.notification)
+        onPermissionRequest?(request) { [weak self] decision in
+            self?.submitDecision(decision)
+        }
     }
 }
 
@@ -62,7 +94,7 @@ extension WatchWCSessionManager: WCSessionDelegate {
         }
     }
 
-    /// Receive message from iPhone — this is where permission requests arrive
+    /// Receive message from iPhone — this is where permission requests arrive.
     func session(_ session: WCSession,
                  didReceiveMessage message: [String: Any],
                  replyHandler: @escaping ([String: Any]) -> Void) {
@@ -82,24 +114,31 @@ extension WatchWCSessionManager: WCSessionDelegate {
             }
 
             Task { @MainActor in
-                self.pendingReply = replyHandler
-                self.pendingRequest = request
-
-                // Play haptic feedback to alert the user
-                WKInterfaceDevice.current().play(.notification)
-
-                // Notify the view model via callback
-                self.onPermissionRequest?(request) { decision in
-                    self.submitDecision(decision)
+                if self.pendingRequest != nil {
+                    // Another request is already being decided — enqueue.
+                    self.requestQueue.append((request, replyHandler))
+                    self.queueCount = self.requestQueue.count
+                } else {
+                    // Show immediately.
+                    self.currentReply = replyHandler
+                    self.pendingRequest = request
+                    self.queueCount = 0
+                    WKInterfaceDevice.current().play(.notification)
+                    self.onPermissionRequest?(request) { [weak self] decision in
+                        self?.submitDecision(decision)
+                    }
                 }
             }
 
         case "session_ended":
             Task { @MainActor in
-                if let reply = self.pendingReply {
+                // Cancel the current request and drain the queue.
+                if let reply = self.currentReply {
                     reply(["status": "error", "message": "Session ended"])
-                    self.pendingReply = nil
+                    self.currentReply = nil
                 }
+                self.requestQueue.removeAll()
+                self.queueCount = 0
                 self.pendingRequest = nil
             }
 
@@ -116,6 +155,9 @@ extension WatchWCSessionManager: WCSessionDelegate {
             switch messageType {
             case "session_ended":
                 Task { @MainActor in
+                    self.currentReply = nil
+                    self.requestQueue.removeAll()
+                    self.queueCount = 0
                     self.pendingRequest = nil
                 }
             default:

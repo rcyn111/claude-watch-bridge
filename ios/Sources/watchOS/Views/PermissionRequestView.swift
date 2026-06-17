@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PermissionRequestView: View {
     @StateObject private var viewModel = PermissionViewModel()
+    @ObservedObject private var sessionManager = WatchWCSessionManager.shared
     @State private var showingDetails = false
 
     var body: some View {
@@ -97,6 +98,22 @@ struct PermissionRequestView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 3)
             .background(Capsule().fill(toolColor(for: request.toolName)))
+
+        // Queue count (only visible when more requests are waiting)
+        if sessionManager.queueCount > 0 {
+            HStack(spacing: 3) {
+                Image(systemName: "list.bullet.rectangle")
+                    .font(.system(size: 9))
+                Text("+\(sessionManager.queueCount) more")
+                    .font(.caption2)
+            }
+            .foregroundColor(.blue)
+            .padding(.vertical, 2)
+            .padding(.horizontal, 8)
+            .background(
+                Capsule().fill(Color.blue.opacity(0.15))
+            )
+        }
 
         // Countdown timer
         HStack(spacing: 4) {

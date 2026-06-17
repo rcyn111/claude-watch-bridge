@@ -11,23 +11,39 @@ class PermissionViewModel: ObservableObject {
 
     private let sessionManager = WatchWCSessionManager.shared
     private var timer: Timer?
-    private var pendingReply: ((PermissionDecision) -> Void)?
     private let hapticManager = HapticManager()
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
-        sessionManager.onPermissionRequest = { [weak self] request, reply in
-            self?.currentRequest = request
-            self?.pendingReply = reply
-            self?.isProcessing = false
-            self?.autoDismissed = false
-            self?.lastDecision = nil
-            self?.startCountdown(from: request.timeoutSeconds)
-            self?.hapticManager.notifyNewRequest()
-        }
+        // Observe the session-manager's published request. When it changes to
+        // a new request (or the next queued request), reset the UI. When it
+        // clears, stop the countdown and let the "approved/denied" state show.
+        sessionManager.$pendingRequest
+            .receive(on: RunLoop.main)
+            .sink { [weak self] request in
+                guard let self else { return }
+                if let request = request {
+                    self.currentRequest = request
+                    self.isProcessing = false
+                    self.autoDismissed = false
+                    self.lastDecision = nil
+                    self.startCountdown(from: request.timeoutSeconds)
+                    self.hapticManager.notifyNewRequest()
+                } else {
+                    // No request being shown — the queue is drained.
+                    self.currentRequest = nil
+                    self.timer?.invalidate()
+                    self.timer = nil
+                    self.isProcessing = false
+                }
+            }
+            .store(in: &cancellables)
     }
 
+    // MARK: - Decisions (called from the UI)
+
     func approve() {
-        guard let request = currentRequest, let reply = pendingReply else { return }
+        guard let request = currentRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -37,12 +53,11 @@ class PermissionViewModel: ObservableObject {
 
         hapticManager.feedbackDecision(.allow)
         lastDecision = .allow
-        reply(decision)
-        clearPending()
+        sessionManager.submitDecision(decision)
     }
 
     func deny() {
-        guard let request = currentRequest, let reply = pendingReply else { return }
+        guard let request = currentRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -53,12 +68,11 @@ class PermissionViewModel: ObservableObject {
 
         hapticManager.feedbackDecision(.deny)
         lastDecision = .deny
-        reply(decision)
-        clearPending()
+        sessionManager.submitDecision(decision)
     }
 
     func approveAll() {
-        guard let request = currentRequest, let reply = pendingReply else { return }
+        guard let request = currentRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -76,17 +90,10 @@ class PermissionViewModel: ObservableObject {
 
         hapticManager.feedbackDecision(.allow)
         lastDecision = .allow
-        reply(decision)
-        clearPending()
+        sessionManager.submitDecision(decision)
     }
 
-    private func clearPending() {
-        currentRequest = nil
-        pendingReply = nil
-        timer?.invalidate()
-        timer = nil
-        isProcessing = false
-    }
+    // MARK: - Countdown
 
     private func startCountdown(from seconds: Int) {
         timeRemaining = TimeInterval(seconds)
@@ -101,11 +108,14 @@ class PermissionViewModel: ObservableObject {
                 WKInterfaceDevice.current().play(.directionUp)
             }
 
-            // Auto-dismiss on timeout
+            // Auto-dismiss on timeout — advance the queue so the next request
+            // (if any) is shown immediately.
             if self.timeRemaining <= 0 {
                 self.timer?.invalidate()
+                self.timer = nil
                 self.autoDismissed = true
-                self.clearPending()
+                self.isProcessing = false
+                self.sessionManager.timeoutCurrent()
             }
         }
     }
