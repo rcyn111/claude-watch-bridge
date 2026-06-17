@@ -1,0 +1,19 @@
+# Node.js
+bridge/node_modules/
+bridge/dist/
+bridge/.env
+bridge/coverage/
+
+# Xcode
+ios/*.xcworkspace/
+ios/*.xcodeproj/
+ios/DerivedData/
+ios/.build/
+
+# macOS
+.DS_Store
+*.xcuserdata
+
+# IDE
+.vscode/
+.idea/
