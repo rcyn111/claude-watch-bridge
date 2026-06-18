@@ -1,0 +1,109 @@
+{
+  "" : {
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatch Watch App-primary.dia",
+    "emit-module-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatch Watch App-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatch Watch App-primary-emit-module.dia",
+    "pch" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatch Watch App-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatch Watch App-primary.swiftdeps"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/BridgeEvent.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/BridgeEvent~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionDecision.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionDecision~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionRequest.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequest~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/ClaudeWatchWatchApp.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ClaudeWatchWatchApp~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Services/HapticManager.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/HapticManager~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Services/WCSessionManager.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/WCSessionManager~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/ViewModels/PermissionViewModel.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionViewModel~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/ContentView.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/ContentView~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/PermissionRequestView.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/PermissionRequestView~partial.swiftmodule"
+  },
+  "/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/RequestHistoryView.swift" : {
+    "const-values" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.swiftconstvalues",
+    "dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.d",
+    "diagnostics" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.dia",
+    "index-unit-output-path" : "/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.o",
+    "llvm-bc" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.bc",
+    "object" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.o",
+    "swift-dependencies" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView.swiftdeps",
+    "swiftmodule" : "/Users/renchengtian/Projects/claude-watch-bridge/ios/build/ClaudeWatch.build/Debug-watchos/ClaudeWatch Watch App.build/Objects-normal/arm64_32/RequestHistoryView~partial.swiftmodule"
+  }
+}

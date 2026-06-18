@@ -31,6 +31,9 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Claude Watch needs local network access to communicate with the Bridge Server on your Mac.</string>

@@ -125,8 +125,8 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
                     self.pendingRequest = request
                     self.queueCount = 0
                     WKInterfaceDevice.current().play(.notification)
-                    self.onPermissionRequest?(request) { [weak self] decision in
-                        self?.submitDecision(decision)
+                    self.onPermissionRequest?(request) { decision in
+                        self.submitDecision(decision)
                     }
                 }
             }

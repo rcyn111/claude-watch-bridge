@@ -101,22 +101,24 @@ class PermissionViewModel: ObservableObject {
         timer?.invalidate()
 
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            self.timeRemaining -= 1
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                self.timeRemaining -= 1
 
-            // Haptic warning at 30 seconds
-            if self.timeRemaining == 30 {
-                WKInterfaceDevice.current().play(.directionUp)
-            }
+                // Haptic warning at 30 seconds
+                if self.timeRemaining == 30 {
+                    WKInterfaceDevice.current().play(.directionUp)
+                }
 
-            // Auto-dismiss on timeout — advance the queue so the next request
-            // (if any) is shown immediately.
-            if self.timeRemaining <= 0 {
-                self.timer?.invalidate()
-                self.timer = nil
-                self.autoDismissed = true
-                self.isProcessing = false
-                self.sessionManager.timeoutCurrent()
+                // Auto-dismiss on timeout — advance the queue so the next request
+                // (if any) is shown immediately.
+                if self.timeRemaining <= 0 {
+                    self.timer?.invalidate()
+                    self.timer = nil
+                    self.autoDismissed = true
+                    self.isProcessing = false
+                    self.sessionManager.timeoutCurrent()
+                }
             }
         }
     }

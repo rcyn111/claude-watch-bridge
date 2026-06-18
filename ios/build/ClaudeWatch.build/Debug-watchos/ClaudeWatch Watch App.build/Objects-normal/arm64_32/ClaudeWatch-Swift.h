@@ -347,7 +347,6 @@ extern "C" {
 @import Foundation;
 @import ObjectiveC;
 @import WatchConnectivity;
-@import WatchKit;
 #endif
 
 #endif // defined(__OBJC__)
@@ -370,13 +369,6 @@ extern "C" {
 #endif
 
 #if defined(__OBJC__)
-
-SWIFT_CLASS("_TtC11ClaudeWatch11AppDelegate")
-@interface AppDelegate : NSObject <WKApplicationDelegate>
-- (void)applicationDidFinishLaunching;
-- (void)applicationDidBecomeActive;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
 
 SWIFT_CLASS("_TtC11ClaudeWatch21WatchWCSessionManager")
 @interface WatchWCSessionManager : NSObject
