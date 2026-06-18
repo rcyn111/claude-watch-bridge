@@ -14,6 +14,14 @@ settings:
     DEVELOPMENT_TEAM: WCTCYM7AW6
     CODE_SIGN_STYLE: Automatic
 
+schemes:
+  ClaudeWatch iOS:
+    build:
+      targets:
+        ClaudeWatch iOS: all
+    run:
+      config: Debug
+
 targets:
   # iOS Companion App
   ClaudeWatch iOS:
