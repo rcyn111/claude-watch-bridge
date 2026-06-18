@@ -24,7 +24,7 @@
 	<true/>
 	<key>WKApplication</key>
 	<true/>
-	<key>WKExtensionDelegateClassName</key>
-	<string>$(PRODUCT_MODULE_NAME).AppDelegate</string>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>com.rcyn111.claudewatch.ios</string>
 </dict>
 </plist>
