@@ -1,0 +1,11 @@
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Services/BonjourDiscovery.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Services/BridgeClient.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/BridgeEvent.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/ClaudeWatchApp.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Views/ContentView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Views/DashboardView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Services/KeychainManager.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Views/PairingView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionDecision.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionRequest.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/iOS/Services/WCSessionManager.swift

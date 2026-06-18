@@ -39,7 +39,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.rcyn111.claudewatch.ios
         PRODUCT_NAME: ClaudeWatch
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-    dependencies: []
+    dependencies:
+      - target: ClaudeWatch Watch App
+        embed: true
     preBuildScripts:
       - name: "SwiftLint"
         script: |

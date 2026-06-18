@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'ClaudeWatch iOS' in project 'ClaudeWatch'
+➜ Explicit dependency on target 'ClaudeWatch Watch App' in project 'ClaudeWatch'
+Target 'ClaudeWatch Watch App' in project 'ClaudeWatch' (no dependencies)
