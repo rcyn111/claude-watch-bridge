@@ -1,0 +1,10 @@
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/BridgeEvent.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/ClaudeWatchWatchApp.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/ContentView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Services/HapticManager.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionDecision.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/Shared/Models/PermissionRequest.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/PermissionRequestView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/ViewModels/PermissionViewModel.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Views/RequestHistoryView.swift
+/Users/renchengtian/Projects/claude-watch-bridge/ios/Sources/watchOS/Services/WCSessionManager.swift
