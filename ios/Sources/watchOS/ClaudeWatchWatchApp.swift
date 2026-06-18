@@ -3,27 +3,21 @@ import WatchConnectivity
 
 @main
 struct ClaudeWatchWatchApp: App {
-    @WKApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @Environment(\.scenePhase) var scenePhase
 
     var body: some Scene {
         WindowGroup {
             WatchContentView()
-        }
-    }
-}
-
-class AppDelegate: NSObject, WKApplicationDelegate {
-    func applicationDidFinishLaunching() {
-        // Initialize WCSession on app launch
-        _ = WatchWCSessionManager.shared
-    }
-
-    func applicationDidBecomeActive() {
-        // Refresh WCSession state
-        let session = WatchWCSessionManager.shared
-        if !WCSession.default.isReachable {
-            // Try to re-establish
-            WCSession.default.activate()
+                .onAppear {
+                    _ = WatchWCSessionManager.shared
+                }
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        if !WCSession.default.isReachable {
+                            WCSession.default.activate()
+                        }
+                    }
+                }
         }
     }
 }

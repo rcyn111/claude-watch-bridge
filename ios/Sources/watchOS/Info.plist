@@ -24,5 +24,7 @@
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>
 	<string>com.rcyn111.claudewatch.ios</string>
+	<key>UISceneConfigurations</key>
+	<dict/>
 </dict>
 </plist>
