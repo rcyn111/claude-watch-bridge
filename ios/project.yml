@@ -11,6 +11,8 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    DEVELOPMENT_TEAM: WCTCYM7AW6
+    CODE_SIGN_STYLE: Automatic
 
 targets:
   # iOS Companion App
