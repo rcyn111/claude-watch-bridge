@@ -83,7 +83,7 @@ class WCSessionManager: NSObject, ObservableObject {
 
 // MARK: - WCSessionDelegate
 
-extension WCSessionManager: WCSessionDelegate {
+extension WCSessionManager: @preconcurrency WCSessionDelegate {
     func session(_ session: WCSession,
                  activationDidCompleteWith activationState: WCSessionActivationState,
                  error: Error?) {

@@ -1,5 +1,6 @@
 import Foundation
 import WatchConnectivity
+import WatchKit
 import Combine
 
 @MainActor
@@ -78,7 +79,7 @@ class WatchWCSessionManager: NSObject, ObservableObject {
 
 // MARK: - WCSessionDelegate
 
-extension WatchWCSessionManager: WCSessionDelegate {
+extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
     func session(_ session: WCSession,
                  activationDidCompleteWith activationState: WCSessionActivationState,
                  error: Error?) {

@@ -1,4 +1,5 @@
 import SwiftUI
+import WatchConnectivity
 
 @main
 struct ClaudeWatchWatchApp: App {
