@@ -118,16 +118,22 @@ class BridgeClient: ObservableObject {
             while !Task.isCancelled {
                 guard let url = self.bridgeURL, let token = self.sessionToken else {
                     self.isConnected = false
+                    self.lastSSE = "no url/token"
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                     continue
                 }
+                self.lastSSE = "loop"
                 do {
+                    self.lastSSE = "connecting..."
                     var request = URLRequest(url: url.appendingPathComponent("/events"))
                     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
                     request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
+                    self.lastSSE = "req sent"
                     let (bytes, response) = try await self.urlSession.bytes(for: request)
+                    self.lastSSE = "got resp"
                     guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                        self.lastSSE = "bad status"
                         // 401 etc. — token may be invalid; back off and retry.
                         self.isConnected = false
                         try? await Task.sleep(nanoseconds: UInt64(backoff * 1_000_000_000))
