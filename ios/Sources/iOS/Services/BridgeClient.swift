@@ -140,8 +140,11 @@ class BridgeClient: ObservableObject {
 
                     var eventType = ""
                     var dataBuffer = ""
+                    var lineCount = 0
                     for try await line in bytes.lines {
                         if Task.isCancelled { break }
+                        lineCount += 1
+                        if lineCount <= 3 { self.lastSSE = "line[\(lineCount)]: \(line.prefix(40))" }
                         if line.hasPrefix("event: ") {
                             eventType = String(line.dropFirst(7)).trimmingCharacters(in: .whitespaces)
                         } else if line.hasPrefix("data: ") {
@@ -152,11 +155,15 @@ class BridgeClient: ObservableObject {
                                let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
                                 self.lastSSE = "\(event.type.rawValue)"
                                 self.onEvent?(event)
+                            } else if !eventType.isEmpty || !dataBuffer.isEmpty {
+                                self.lastSSE = "rx: \(eventType)"
                             }
                             eventType = ""
                             dataBuffer = ""
                         }
                     }
+                    // Stream ended
+                    self.lastSSE = "stream ended after \(lineCount) lines"
 
                     // Stream ended (server restart, network drop) — reconnect.
                     self.isConnected = false
