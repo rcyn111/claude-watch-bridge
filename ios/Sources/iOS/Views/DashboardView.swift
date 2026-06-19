@@ -7,8 +7,8 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             List {
-                // Status section
-                Section("Connection Status") {
+                // Connection status
+                Section {
                     StatusRow(
                         title: "Bridge Server",
                         isConnected: bridgeClient.isConnected,
@@ -21,53 +21,52 @@ struct DashboardView: View {
                             ? "Reachable"
                             : (wcSessionManager.isWatchAppInstalled ? "Not Reachable" : "App Not Installed")
                     )
+                } header: {
+                    Text("Connection")
                 }
 
-                // Live SSE log (last 20 entries)
-                Section("Live Log (SSE)") {
-                    ForEach(Array(bridgeClient.sseLog.suffix(20).enumerated()), id: \.offset) { _, msg in
-                        Text(msg)
-                            .font(.system(size: 8, design: .monospaced))
-                            .foregroundColor(.secondary)
+                // Last activity
+                if wcSessionManager.lastActivity != "—" {
+                    Section {
+                        HStack {
+                            Image(systemName: "arrow.right.circle")
+                                .foregroundColor(.blue)
+                            Text(wcSessionManager.lastActivity)
+                                .font(.subheadline)
+                        }
+                    } header: {
+                        Text("Last Event")
                     }
                 }
 
-                // WCS Session state
-                Section("WCSession") {
-                    Text("reachable=\(wcSessionManager.isReachable) watch=\(wcSessionManager.isWatchAppInstalled) act=\(wcSessionManager.isActivated)")
-                        .font(.caption.monospaced())
-                    Text("last: \(wcSessionManager.lastActivity)")
-                        .font(.system(size: 8, design: .monospaced))
-                        .foregroundColor(.secondary)
-                }
-
-                // Pending requests section
-                Section("Pending Requests") {
+                // Pending requests
+                Section {
                     if wcSessionManager.pendingRequests.isEmpty {
-                        Text("No pending requests")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        HStack {
+                            Image(systemName: "bell.slash")
+                                .foregroundColor(.secondary)
+                            Text("No pending requests")
+                                .foregroundColor(.secondary)
+                        }
                     } else {
                         ForEach(wcSessionManager.pendingRequests) { request in
                             VStack(alignment: .leading, spacing: 4) {
                                 Label(request.toolName, systemImage: iconForTool(request.toolName))
                                     .font(.headline)
                                 Text(request.toolInputCommand)
-                                    .font(.caption.monospaced())
+                                    .font(.subheadline.monospaced())
                                     .lineLimit(2)
                                     .foregroundColor(.secondary)
                             }
                         }
                     }
+                } header: {
+                    Text("Pending Requests")
                 }
 
-                // Request history section
-                Section("Recent History") {
-                    if wcSessionManager.requestHistory.isEmpty {
-                        Text("No recent requests")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    } else {
+                // Request history
+                if !wcSessionManager.requestHistory.isEmpty {
+                    Section {
                         ForEach(wcSessionManager.requestHistory.prefix(20)) { request in
                             HStack {
                                 Image(systemName: iconForTool(request.toolName))
@@ -79,10 +78,12 @@ struct DashboardView: View {
                                     .lineLimit(1)
                             }
                         }
+                    } header: {
+                        Text("Recent History")
                     }
                 }
 
-                // Actions section
+                // Actions
                 Section {
                     Button(role: .destructive) {
                         bridgeClient.stopListening()
@@ -125,9 +126,10 @@ struct StatusRow: View {
                 .fill(isConnected ? Color.green : Color.red)
                 .frame(width: 10, height: 10)
             Text(title)
+                .font(.body)
             Spacer()
             Text(detail)
-                .font(.caption)
+                .font(.subheadline)
                 .foregroundColor(.secondary)
         }
     }

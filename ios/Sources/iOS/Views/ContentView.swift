@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
     @StateObject private var bridgeClient = BridgeClient()
@@ -20,6 +21,9 @@ struct ContentView: View {
                 .tag(1)
         }
         .onAppear {
+            // Request notification permission.
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+
             // Route incoming SSE events to the handler.
             bridgeClient.onEvent = { event in
                 Task { @MainActor in
@@ -44,7 +48,17 @@ struct ContentView: View {
             guard let requestId = event.requestId,
                   let toolName = event.toolName else { break }
 
-            wcSessionManager.lastActivity = "rx: \(toolName) reach=\(wcSessionManager.isReachable)"
+            wcSessionManager.lastActivity = "\(toolName) — forwarding to Watch"
+
+            // Fire a local notification so the user knows even if the app
+            // is in the background.
+            let content = UNMutableNotificationContent()
+            content.title = "Claude Code: \(toolName)"
+            content.body = "Approve or deny on your Apple Watch"
+            content.sound = .default
+            UNUserNotificationCenter.current().add(
+                .init(identifier: requestId, content: content, trigger: nil)
+            )
 
             let request = PermissionRequest(
                 id: requestId,
@@ -59,18 +73,17 @@ struct ContentView: View {
             wcSessionManager.pendingRequests.append(request)
 
             if wcSessionManager.isReachable {
-                wcSessionManager.lastActivity = "sending to watch..."
                 do {
                     let decision = try await wcSessionManager.sendPermissionRequest(request)
-                    wcSessionManager.lastActivity = "watch replied: \(decision.behavior.rawValue)"
+                    wcSessionManager.lastActivity = "\(toolName) — \(decision.behavior.rawValue) via Watch"
                     try await bridgeClient.submitDecision(decision)
                     wcSessionManager.pendingRequests.removeAll { $0.requestId == requestId }
                     wcSessionManager.requestHistory.insert(request, at: 0)
                 } catch {
-                    wcSessionManager.lastActivity = "send err: \(error.localizedDescription.prefix(30))"
+                    wcSessionManager.lastActivity = "\(toolName) — error: \(error.localizedDescription.prefix(24))"
                 }
             } else {
-                wcSessionManager.lastActivity = "NOT reachable, queued"
+                wcSessionManager.lastActivity = "\(toolName) — Watch not reachable"
             }
 
         case .sessionEnded:
