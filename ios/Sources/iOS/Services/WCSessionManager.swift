@@ -87,6 +87,7 @@ extension WCSessionManager: @preconcurrency WCSessionDelegate {
     func session(_ session: WCSession,
                  activationDidCompleteWith activationState: WCSessionActivationState,
                  error: Error?) {
+        print("[iOS] WCSession activation: state=\(activationState.rawValue) reachable=\(session.isReachable) watchInstalled=\(session.isWatchAppInstalled) error=\(error?.localizedDescription ?? "nil")")
         Task { @MainActor in
             isActivated = activationState == .activated
             isWatchAppInstalled = session.isWatchAppInstalled
@@ -95,6 +96,7 @@ extension WCSessionManager: @preconcurrency WCSessionDelegate {
     }
 
     func sessionReachabilityDidChange(_ session: WCSession) {
+        print("[iOS] WCSession reachability changed: \(session.isReachable)")
         Task { @MainActor in
             isReachable = session.isReachable
         }

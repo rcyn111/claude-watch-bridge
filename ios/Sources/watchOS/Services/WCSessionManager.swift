@@ -83,6 +83,7 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
     func session(_ session: WCSession,
                  activationDidCompleteWith activationState: WCSessionActivationState,
                  error: Error?) {
+        print("[Watch] WCSession activation: state=\(activationState.rawValue) reachable=\(session.isReachable) error=\(error?.localizedDescription ?? "nil")")
         Task { @MainActor in
             isActivated = activationState == .activated
             isReachable = session.isReachable
@@ -90,6 +91,7 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
     }
 
     func sessionReachabilityDidChange(_ session: WCSession) {
+        print("[Watch] WCSession reachability changed: \(session.isReachable)")
         Task { @MainActor in
             isReachable = session.isReachable
         }
@@ -100,7 +102,10 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
                  didReceiveMessage message: [String: Any],
                  replyHandler: @escaping ([String: Any]) -> Void) {
 
+        print("[Watch] didReceiveMessage type=\(message["type"] ?? "nil") keys=\(message.keys.sorted().joined(separator: ","))")
+
         guard let messageType = message["type"] as? String else {
+            print("[Watch] ERROR: missing type in message")
             replyHandler(["status": "error", "message": "Missing type"])
             return
         }
@@ -110,20 +115,26 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
             guard let requestData = try? JSONSerialization.data(withJSONObject: message),
                   let request = try? JSONDecoder().decode(PermissionRequest.self, from: requestData)
             else {
+                print("[Watch] ERROR: failed to decode PermissionRequest from message")
                 replyHandler(["status": "error", "message": "Invalid request format"])
                 return
             }
 
+            print("[Watch] decoded request: tool=\(request.toolName) id=\(request.requestId)")
+
             Task { @MainActor in
+                print("[Watch] setting pendingRequest, onPermissionRequest=\(self.onPermissionRequest != nil ? \"set\" : \"nil\")")
                 if self.pendingRequest != nil {
                     // Another request is already being decided — enqueue.
                     self.requestQueue.append((request, replyHandler))
                     self.queueCount = self.requestQueue.count
+                    print("[Watch] queued (queueCount=\(self.queueCount))")
                 } else {
                     // Show immediately.
                     self.currentReply = replyHandler
                     self.pendingRequest = request
                     self.queueCount = 0
+                    print("[Watch] showing immediately, playing haptic")
                     WKInterfaceDevice.current().play(.notification)
                     self.onPermissionRequest?(request) { decision in
                         self.submitDecision(decision)

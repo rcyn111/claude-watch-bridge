@@ -44,6 +44,9 @@ struct ContentView: View {
             guard let requestId = event.requestId,
                   let toolName = event.toolName else { break }
 
+            print("[iOS] SSE event: permission_request | tool=\(toolName) id=\(requestId)")
+            print("[iOS] WCSession: activated=\(wcSessionManager.isActivated) reachable=\(wcSessionManager.isReachable) watchInstalled=\(wcSessionManager.isWatchAppInstalled)")
+
             let request = PermissionRequest(
                 id: requestId,
                 requestId: requestId,
@@ -58,15 +61,17 @@ struct ContentView: View {
 
             // Forward to Apple Watch if reachable
             if wcSessionManager.isReachable {
+                print("[iOS] Sending to watch via WCSession...")
                 do {
                     let decision = try await wcSessionManager.sendPermissionRequest(request)
+                    print("[iOS] Watch replied: \(decision.behavior.rawValue)")
                     // Submit decision back to bridge
                     try await bridgeClient.submitDecision(decision)
                     // Remove from pending
                     wcSessionManager.pendingRequests.removeAll { $0.requestId == requestId }
                     wcSessionManager.requestHistory.insert(request, at: 0)
                 } catch {
-                    print("Failed to get decision from Watch: \(error)")
+                    print("[iOS] sendPermissionRequest error: \(error)")
                 }
             }
 
