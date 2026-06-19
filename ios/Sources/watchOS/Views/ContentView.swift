@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct WatchContentView: View {
-    @StateObject private var viewModel = PermissionViewModel()
-
     var body: some View {
         NavigationStack {
             PermissionRequestView()

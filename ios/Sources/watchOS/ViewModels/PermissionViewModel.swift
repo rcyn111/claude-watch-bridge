@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 import WatchKit
 
 @MainActor
@@ -13,32 +12,22 @@ class PermissionViewModel: ObservableObject {
     private let sessionManager = WatchWCSessionManager.shared
     private var timer: Timer?
     private let hapticManager = HapticManager()
-    private var cancellables = Set<AnyCancellable>()
 
     init() {
-        // Observe the session-manager's published request. When it changes to
-        // a new request (or the next queued request), reset the UI. When it
-        // clears, stop the countdown and let the "approved/denied" state show.
-        sessionManager.$pendingRequest
-            .receive(on: RunLoop.main)
-            .sink { [weak self] request in
+        // React to each request the session-manager presents (first or queued).
+        // The session-manager owns the reply handler; we call submitDecision()
+        // on approve/deny.
+        sessionManager.onPermissionRequest = { [weak self] request, _ in
+            Task { @MainActor [weak self] in
                 guard let self else { return }
-                if let request = request {
-                    self.currentRequest = request
-                    self.isProcessing = false
-                    self.autoDismissed = false
-                    self.lastDecision = nil
-                    self.startCountdown(from: request.timeoutSeconds)
-                    self.hapticManager.notifyNewRequest()
-                } else {
-                    // No request being shown — the queue is drained.
-                    self.currentRequest = nil
-                    self.timer?.invalidate()
-                    self.timer = nil
-                    self.isProcessing = false
-                }
+                self.currentRequest = request
+                self.isProcessing = false
+                self.autoDismissed = false
+                self.lastDecision = nil
+                self.startCountdown(from: request.timeoutSeconds)
+                self.hapticManager.notifyNewRequest()
             }
-            .store(in: &cancellables)
+        }
     }
 
     // MARK: - Decisions (called from the UI)
