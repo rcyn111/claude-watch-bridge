@@ -32,6 +32,15 @@ struct DashboardView: View {
                     }
                 }
 
+                // WCS Session state
+                Section("WCSession") {
+                    Text("reachable=\(wcSessionManager.isReachable) watch=\(wcSessionManager.isWatchAppInstalled) act=\(wcSessionManager.isActivated)")
+                        .font(.caption.monospaced())
+                    Text("last: \(wcSessionManager.lastActivity)")
+                        .font(.system(size: 8, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
+
                 // Pending requests section
                 Section("Pending Requests") {
                     if wcSessionManager.pendingRequests.isEmpty {

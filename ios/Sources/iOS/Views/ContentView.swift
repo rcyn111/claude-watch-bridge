@@ -44,9 +44,7 @@ struct ContentView: View {
             guard let requestId = event.requestId,
                   let toolName = event.toolName else { break }
 
-            wcSessionManager.lastActivity = "SSE: \(toolName) | WCS: reachable=\(wcSessionManager.isReachable) watch=\(wcSessionManager.isWatchAppInstalled)"
-            print("[iOS] SSE event: permission_request | tool=\(toolName) id=\(requestId)")
-            print("[iOS] WCSession: activated=\(wcSessionManager.isActivated) reachable=\(wcSessionManager.isReachable) watchInstalled=\(wcSessionManager.isWatchAppInstalled)")
+            wcSessionManager.lastActivity = "rx: \(toolName) reach=\(wcSessionManager.isReachable)"
 
             let request = PermissionRequest(
                 id: requestId,
@@ -60,20 +58,19 @@ struct ContentView: View {
 
             wcSessionManager.pendingRequests.append(request)
 
-            // Forward to Apple Watch if reachable
             if wcSessionManager.isReachable {
-                print("[iOS] Sending to watch via WCSession...")
+                wcSessionManager.lastActivity = "sending to watch..."
                 do {
                     let decision = try await wcSessionManager.sendPermissionRequest(request)
-                    print("[iOS] Watch replied: \(decision.behavior.rawValue)")
-                    // Submit decision back to bridge
+                    wcSessionManager.lastActivity = "watch replied: \(decision.behavior.rawValue)"
                     try await bridgeClient.submitDecision(decision)
-                    // Remove from pending
                     wcSessionManager.pendingRequests.removeAll { $0.requestId == requestId }
                     wcSessionManager.requestHistory.insert(request, at: 0)
                 } catch {
-                    print("[iOS] sendPermissionRequest error: \(error)")
+                    wcSessionManager.lastActivity = "send err: \(error.localizedDescription.prefix(30))"
                 }
+            } else {
+                wcSessionManager.lastActivity = "NOT reachable, queued"
             }
 
         case .sessionEnded:
