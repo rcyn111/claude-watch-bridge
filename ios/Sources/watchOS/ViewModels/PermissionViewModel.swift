@@ -3,7 +3,6 @@ import WatchKit
 
 @MainActor
 class PermissionViewModel: ObservableObject {
-    @Published var currentRequest: PermissionRequest?
     @Published var isProcessing = false
     @Published var timeRemaining: TimeInterval = 300
     @Published var autoDismissed = false
@@ -14,26 +13,47 @@ class PermissionViewModel: ObservableObject {
     private let hapticManager = HapticManager()
 
     init() {
-        // React to each request the session-manager presents (first or queued).
-        // The session-manager owns the reply handler; we call submitDecision()
-        // on approve/deny.
+        // Watch sessionManager.pendingRequest for changes directly —
+        // PermissionRequestView uses it directly for the request UI.
+        // We track countdown + autoDismiss here.
         sessionManager.onPermissionRequest = { [weak self] request, _ in
+            self?.resetForNewRequest(seconds: request.timeoutSeconds)
+        }
+    }
+
+    private func resetForNewRequest(seconds: Int) {
+        isProcessing = false
+        autoDismissed = false
+        lastDecision = nil
+        timeRemaining = TimeInterval(seconds)
+        timer?.invalidate()
+
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                self.currentRequest = request
-                self.isProcessing = false
-                self.autoDismissed = false
-                self.lastDecision = nil
-                self.startCountdown(from: request.timeoutSeconds)
-                self.hapticManager.notifyNewRequest()
+                self.timeRemaining -= 1
+
+                if self.timeRemaining == 30 {
+                    WKInterfaceDevice.current().play(.directionUp)
+                }
+
+                if self.timeRemaining <= 0 {
+                    self.timer?.invalidate()
+                    self.timer = nil
+                    self.autoDismissed = true
+                    self.isProcessing = false
+                    self.sessionManager.timeoutCurrent()
+                }
             }
         }
+
+        hapticManager.notifyNewRequest()
     }
 
     // MARK: - Decisions (called from the UI)
 
     func approve() {
-        guard let request = currentRequest, !isProcessing else { return }
+        guard let request = sessionManager.pendingRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -47,7 +67,7 @@ class PermissionViewModel: ObservableObject {
     }
 
     func deny() {
-        guard let request = currentRequest, !isProcessing else { return }
+        guard let request = sessionManager.pendingRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -62,7 +82,7 @@ class PermissionViewModel: ObservableObject {
     }
 
     func approveAll() {
-        guard let request = currentRequest, !isProcessing else { return }
+        guard let request = sessionManager.pendingRequest, !isProcessing else { return }
         isProcessing = true
 
         let decision = PermissionDecision(
@@ -81,35 +101,6 @@ class PermissionViewModel: ObservableObject {
         hapticManager.feedbackDecision(.allow)
         lastDecision = .allow
         sessionManager.submitDecision(decision)
-    }
-
-    // MARK: - Countdown
-
-    private func startCountdown(from seconds: Int) {
-        timeRemaining = TimeInterval(seconds)
-        timer?.invalidate()
-
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self = self else { return }
-                self.timeRemaining -= 1
-
-                // Haptic warning at 30 seconds
-                if self.timeRemaining == 30 {
-                    WKInterfaceDevice.current().play(.directionUp)
-                }
-
-                // Auto-dismiss on timeout — advance the queue so the next request
-                // (if any) is shown immediately.
-                if self.timeRemaining <= 0 {
-                    self.timer?.invalidate()
-                    self.timer = nil
-                    self.autoDismissed = true
-                    self.isProcessing = false
-                    self.sessionManager.timeoutCurrent()
-                }
-            }
-        }
     }
 
     deinit {

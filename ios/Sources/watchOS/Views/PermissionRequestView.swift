@@ -10,7 +10,7 @@ struct PermissionRequestView: View {
             VStack(spacing: 10) {
                 if viewModel.autoDismissed {
                     autoDismissedView
-                } else if let request = viewModel.currentRequest {
+                } else if let request = sessionManager.pendingRequest {
                     requestContentView(request)
                 } else if let lastDecision = viewModel.lastDecision {
                     decisionConfirmationView(lastDecision)
