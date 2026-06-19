@@ -23,19 +23,12 @@ struct DashboardView: View {
                     )
                 }
 
-                // Activity log
-                Section("Live Log") {
-                    HStack {
-                        Text("SSE")
-                            .font(.caption2).foregroundColor(.gray)
-                        Text(bridgeClient.lastSSE)
-                            .font(.caption.monospaced())
-                    }
-                    HStack {
-                        Text("WCS")
-                            .font(.caption2).foregroundColor(.gray)
-                        Text(wcSessionManager.lastActivity)
-                            .font(.caption.monospaced())
+                // Live SSE log (last 20 entries)
+                Section("Live Log (SSE)") {
+                    ForEach(Array(bridgeClient.sseLog.suffix(20).enumerated()), id: \.offset) { _, msg in
+                        Text(msg)
+                            .font(.system(size: 8, design: .monospaced))
+                            .foregroundColor(.secondary)
                     }
                 }
 

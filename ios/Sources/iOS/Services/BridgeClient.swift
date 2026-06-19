@@ -25,7 +25,7 @@ class BridgeClient: ObservableObject {
     @Published var sessionToken: String?
     @Published var bridgeHost: String = ""
     @Published var bridgePort: Int = 3712
-    @Published var lastSSE: String = "—"
+    @Published var sseLog: [String] = []
 
     private var listenTask: Task<Void, Never>?
     private var urlSession: URLSession
@@ -110,6 +110,12 @@ class BridgeClient: ObservableObject {
     /// Start a background task that connects to the SSE event stream and stays
     /// connected, reconnecting with exponential backoff on any disconnect.
     /// Events are delivered via `onEvent`.
+    /// Append a line to the on-screen SSE log (keeps last 50 entries).
+    private func sseAppend(_ msg: String) {
+        sseLog.append(msg)
+        if sseLog.count > 50 { sseLog.removeFirst(sseLog.count - 50) }
+    }
+
     func startListening() {
         listenTask?.cancel()
         listenTask = Task { [weak self] in
@@ -118,23 +124,22 @@ class BridgeClient: ObservableObject {
             while !Task.isCancelled {
                 guard let url = self.bridgeURL, let token = self.sessionToken else {
                     self.isConnected = false
-                    self.lastSSE = "no url/token"
+                    self.sseAppend("no url/token")
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                     continue
                 }
-                self.lastSSE = "loop"
+                self.sseAppend("loop")
                 do {
-                    self.lastSSE = "connecting..."
+                    self.sseAppend("connecting")
                     var request = URLRequest(url: url.appendingPathComponent("/events"))
                     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
                     request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-                    self.lastSSE = "req sent"
+                    self.sseAppend("req sent")
                     let (bytes, response) = try await self.urlSession.bytes(for: request)
-                    self.lastSSE = "got resp"
+                    self.sseAppend("got resp")
                     guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                        self.lastSSE = "bad status"
-                        // 401 etc. — token may be invalid; back off and retry.
+                        self.sseAppend("bad status")
                         self.isConnected = false
                         try? await Task.sleep(nanoseconds: UInt64(backoff * 1_000_000_000))
                         backoff = min(backoff * 2, 30)
@@ -143,9 +148,8 @@ class BridgeClient: ObservableObject {
 
                     self.isConnected = true
                     backoff = 1
-                    self.lastSSE = "streaming"
+                    self.sseAppend("streaming")
 
-                    // Read raw bytes and accumulate lines manually.
                     var buffer = ""
                     var eventCount = 0
                     do {
@@ -157,17 +161,16 @@ class BridgeClient: ObservableObject {
                                     let line = buffer.trimmingCharacters(in: .newlines)
                                     buffer = ""
                                     if line.hasPrefix("event: ") {
-                                        let et = String(line.dropFirst(7))
-                                        self.lastSSE = "evt:\(et)"
+                                        self.sseAppend("evt:\(String(line.dropFirst(7)))")
                                     } else if line.hasPrefix("data: ") {
                                         let payload = String(line.dropFirst(6))
-                                        self.lastSSE = "data:\(payload.prefix(20))"
+                                        self.sseAppend("data:\(payload.prefix(20))")
                                         if !payload.isEmpty,
                                            let data = payload.data(using: .utf8),
                                            let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
                                             eventCount += 1
                                             if event.type != .heartbeat {
-                                                self.lastSSE = "#\(eventCount): \(event.type.rawValue)"
+                                                self.sseAppend("#\(eventCount) \(event.type.rawValue)")
                                                 self.onEvent?(event)
                                             }
                                         }
@@ -175,8 +178,10 @@ class BridgeClient: ObservableObject {
                                 }
                             }
                         }
-                    } catch { self.lastSSE = "err:\(error.localizedDescription.prefix(30))" }
-                    self.lastSSE = "end:\(eventCount)"
+                    } catch {
+                        self.sseAppend("err:\(error.localizedDescription.prefix(30))")
+                    }
+                    self.sseAppend("end:\(eventCount)")
 
                     // Stream ended (server restart, network drop) — reconnect.
                     self.isConnected = false
