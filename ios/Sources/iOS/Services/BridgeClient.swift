@@ -140,30 +140,30 @@ class BridgeClient: ObservableObject {
 
                     var eventType = ""
                     var dataBuffer = ""
+                    var eventCount = 0
                     var lineCount = 0
                     for try await line in bytes.lines {
                         if Task.isCancelled { break }
                         lineCount += 1
-                        if lineCount <= 3 { self.lastSSE = "line[\(lineCount)]: \(line.prefix(40))" }
                         if line.hasPrefix("event: ") {
                             eventType = String(line.dropFirst(7)).trimmingCharacters(in: .whitespaces)
                         } else if line.hasPrefix("data: ") {
                             dataBuffer = String(line.dropFirst(6))
                         } else if line.isEmpty {
+                            eventCount += 1
                             if eventType != "heartbeat", !dataBuffer.isEmpty,
                                let data = dataBuffer.data(using: .utf8),
                                let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
-                                self.lastSSE = "\(event.type.rawValue)"
+                                self.lastSSE = "#\(eventCount): \(event.type.rawValue)"
                                 self.onEvent?(event)
-                            } else if !eventType.isEmpty || !dataBuffer.isEmpty {
-                                self.lastSSE = "rx: \(eventType)"
+                            } else {
+                                self.lastSSE = "ev#\(eventCount): \(eventType)"
                             }
                             eventType = ""
                             dataBuffer = ""
                         }
                     }
-                    // Stream ended
-                    self.lastSSE = "stream ended after \(lineCount) lines"
+                    self.lastSSE = "end:\(lineCount)L"
 
                     // Stream ended (server restart, network drop) — reconnect.
                     self.isConnected = false
