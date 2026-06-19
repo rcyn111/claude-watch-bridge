@@ -143,33 +143,40 @@ class BridgeClient: ObservableObject {
 
                     self.isConnected = true
                     backoff = 1
+                    self.lastSSE = "streaming"
 
-                    var eventType = ""
-                    var dataBuffer = ""
+                    // Read raw bytes and accumulate lines manually.
+                    var buffer = ""
                     var eventCount = 0
-                    var lineCount = 0
-                    for try await line in bytes.lines {
-                        if Task.isCancelled { break }
-                        lineCount += 1
-                        if line.hasPrefix("event: ") {
-                            eventType = String(line.dropFirst(7)).trimmingCharacters(in: .whitespaces)
-                        } else if line.hasPrefix("data: ") {
-                            dataBuffer = String(line.dropFirst(6))
-                        } else if line.isEmpty {
-                            eventCount += 1
-                            if eventType != "heartbeat", !dataBuffer.isEmpty,
-                               let data = dataBuffer.data(using: .utf8),
-                               let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
-                                self.lastSSE = "#\(eventCount): \(event.type.rawValue)"
-                                self.onEvent?(event)
-                            } else {
-                                self.lastSSE = "ev#\(eventCount): \(eventType)"
+                    do {
+                        for try await byte in bytes {
+                            if Task.isCancelled { break }
+                            if let char = String(bytes: [byte], encoding: .utf8) {
+                                buffer.append(char)
+                                if char == "\n" {
+                                    let line = buffer.trimmingCharacters(in: .newlines)
+                                    buffer = ""
+                                    if line.hasPrefix("event: ") {
+                                        let et = String(line.dropFirst(7))
+                                        self.lastSSE = "evt:\(et)"
+                                    } else if line.hasPrefix("data: ") {
+                                        let payload = String(line.dropFirst(6))
+                                        self.lastSSE = "data:\(payload.prefix(20))"
+                                        if !payload.isEmpty,
+                                           let data = payload.data(using: .utf8),
+                                           let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
+                                            eventCount += 1
+                                            if event.type != .heartbeat {
+                                                self.lastSSE = "#\(eventCount): \(event.type.rawValue)"
+                                                self.onEvent?(event)
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            eventType = ""
-                            dataBuffer = ""
                         }
-                    }
-                    self.lastSSE = "end:\(lineCount)L"
+                    } catch { self.lastSSE = "err:\(error.localizedDescription.prefix(30))" }
+                    self.lastSSE = "end:\(eventCount)"
 
                     // Stream ended (server restart, network drop) — reconnect.
                     self.isConnected = false
