@@ -38,6 +38,11 @@ struct PermissionRequestView: View {
                 .font(.caption2)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+
+            Text(sessionManager.lastActivity)
+                .font(.system(size: 8).monospaced())
+                .foregroundColor(.gray)
+                .padding(.top, 4)
         }
         .padding(.top, 30)
     }

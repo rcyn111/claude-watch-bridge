@@ -23,6 +23,13 @@ struct DashboardView: View {
                     )
                 }
 
+                // Activity log
+                Section("Last Activity") {
+                    Text(wcSessionManager.lastActivity)
+                        .font(.caption.monospaced())
+                        .foregroundColor(.secondary)
+                }
+
                 // Pending requests section
                 Section("Pending Requests") {
                     if wcSessionManager.pendingRequests.isEmpty {

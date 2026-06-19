@@ -25,6 +25,7 @@ class WCSessionManager: NSObject, ObservableObject {
     @Published var isActivated = false
     @Published var pendingRequests: [PermissionRequest] = []
     @Published var requestHistory: [PermissionRequest] = []
+    @Published var lastActivity: String = "—"
 
     var onPermissionRequest: ((PermissionRequest, @escaping (PermissionDecision) -> Void) -> Void)?
 
@@ -92,6 +93,7 @@ extension WCSessionManager: @preconcurrency WCSessionDelegate {
             isActivated = activationState == .activated
             isWatchAppInstalled = session.isWatchAppInstalled
             isReachable = session.isReachable
+            lastActivity = "WCSession: activated=\(isActivated) reachable=\(isReachable) watch=\(isWatchAppInstalled)"
         }
     }
 

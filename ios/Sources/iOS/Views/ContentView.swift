@@ -44,6 +44,7 @@ struct ContentView: View {
             guard let requestId = event.requestId,
                   let toolName = event.toolName else { break }
 
+            wcSessionManager.lastActivity = "SSE: \(toolName) | WCS: reachable=\(wcSessionManager.isReachable) watch=\(wcSessionManager.isWatchAppInstalled)"
             print("[iOS] SSE event: permission_request | tool=\(toolName) id=\(requestId)")
             print("[iOS] WCSession: activated=\(wcSessionManager.isActivated) reachable=\(wcSessionManager.isReachable) watchInstalled=\(wcSessionManager.isWatchAppInstalled)")
 

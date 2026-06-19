@@ -13,6 +13,7 @@ class WatchWCSessionManager: NSObject, ObservableObject {
     @Published var isActivated = false
     /// Number of additional requests waiting in the queue (shown as a badge).
     @Published var queueCount: Int = 0
+    @Published var lastActivity: String = "—"
 
     /// Callback triggered when a new permission request needs to be shown.
     /// Receives the request and a reply handler that the caller MUST call with
@@ -87,6 +88,7 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
         Task { @MainActor in
             isActivated = activationState == .activated
             isReachable = session.isReachable
+            lastActivity = "WCSession: act=\(isActivated) reach=\(isReachable)"
         }
     }
 
@@ -94,6 +96,7 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
         print("[Watch] WCSession reachability changed: \(session.isReachable)")
         Task { @MainActor in
             isReachable = session.isReachable
+            lastActivity = "WCSession: reachability=\(session.isReachable)"
         }
     }
 
@@ -103,6 +106,7 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
                  replyHandler: @escaping ([String: Any]) -> Void) {
 
         print("[Watch] didReceiveMessage type=\(message["type"] ?? "nil") keys=\(message.keys.sorted().joined(separator: ","))")
+        Task { @MainActor in self.lastActivity = "RX: \(message["type"] ?? "?")" }
 
         guard let messageType = message["type"] as? String else {
             print("[Watch] ERROR: missing type in message")
