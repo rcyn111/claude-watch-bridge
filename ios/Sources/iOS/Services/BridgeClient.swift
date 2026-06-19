@@ -124,22 +124,16 @@ class BridgeClient: ObservableObject {
             while !Task.isCancelled {
                 guard let url = self.bridgeURL, let token = self.sessionToken else {
                     self.isConnected = false
-                    self.sseAppend("no url/token")
                     try? await Task.sleep(nanoseconds: 2_000_000_000)
                     continue
                 }
-                self.sseAppend("loop")
                 do {
-                    self.sseAppend("connecting")
                     var request = URLRequest(url: url.appendingPathComponent("/events"))
                     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
                     request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-                    self.sseAppend("req sent")
                     let (bytes, response) = try await self.urlSession.bytes(for: request)
-                    self.sseAppend("got resp")
                     guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                        self.sseAppend("bad status")
                         self.isConnected = false
                         try? await Task.sleep(nanoseconds: UInt64(backoff * 1_000_000_000))
                         backoff = min(backoff * 2, 30)
@@ -148,38 +142,27 @@ class BridgeClient: ObservableObject {
 
                     self.isConnected = true
                     backoff = 1
-                    self.sseAppend("streaming")
 
-                    var buffer = ""
+                    var eventType = ""
+                    var dataBuffer = ""
                     var eventCount = 0
-                    do {
-                        for try await byte in bytes {
-                            if Task.isCancelled { break }
-                            if let char = String(bytes: [byte], encoding: .utf8) {
-                                buffer.append(char)
-                                if char == "\n" {
-                                    let line = buffer.trimmingCharacters(in: .newlines)
-                                    buffer = ""
-                                    if line.hasPrefix("event: ") {
-                                        self.sseAppend("evt:\(String(line.dropFirst(7)))")
-                                    } else if line.hasPrefix("data: ") {
-                                        let payload = String(line.dropFirst(6))
-                                        self.sseAppend("data:\(payload.prefix(20))")
-                                        if !payload.isEmpty,
-                                           let data = payload.data(using: .utf8),
-                                           let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
-                                            eventCount += 1
-                                            if event.type != .heartbeat {
-                                                self.sseAppend("#\(eventCount) \(event.type.rawValue)")
-                                                self.onEvent?(event)
-                                            }
-                                        }
-                                    }
-                                }
+                    for try await line in bytes.lines {
+                        if Task.isCancelled { break }
+                        if line.hasPrefix("event: ") {
+                            eventType = String(line.dropFirst(7)).trimmingCharacters(in: .whitespaces)
+                        } else if line.hasPrefix("data: ") {
+                            dataBuffer = String(line.dropFirst(6))
+                        } else if line.isEmpty {
+                            eventCount += 1
+                            if eventType != "heartbeat", !dataBuffer.isEmpty,
+                               let data = dataBuffer.data(using: .utf8),
+                               let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
+                                self.sseAppend("#\(eventCount) \(event.type.rawValue)")
+                                self.onEvent?(event)
                             }
+                            eventType = ""
+                            dataBuffer = ""
                         }
-                    } catch {
-                        self.sseAppend("err:\(error.localizedDescription.prefix(30))")
                     }
                     self.sseAppend("end:\(eventCount)")
 
