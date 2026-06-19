@@ -56,9 +56,9 @@ struct ContentView: View {
             content.title = "Claude Code: \(toolName)"
             content.body = "Approve or deny on your Apple Watch"
             content.sound = .default
-            UNUserNotificationCenter.current().add(
-                .init(identifier: requestId, content: content, trigger: nil)
-            )
+            UNUserNotificationCenter.current()
+                .add(UNNotificationRequest(identifier: requestId, content: content, trigger: nil),
+                     withCompletionHandler: nil)
 
             let request = PermissionRequest(
                 id: requestId,
