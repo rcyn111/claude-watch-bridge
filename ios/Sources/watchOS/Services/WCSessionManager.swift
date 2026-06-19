@@ -123,7 +123,8 @@ extension WatchWCSessionManager: @preconcurrency WCSessionDelegate {
             print("[Watch] decoded request: tool=\(request.toolName) id=\(request.requestId)")
 
             Task { @MainActor in
-                print("[Watch] setting pendingRequest, onPermissionRequest=\(self.onPermissionRequest != nil ? \"set\" : \"nil\")")
+                let cbState = self.onPermissionRequest != nil ? "set" : "nil"
+                print("[Watch] setting pendingRequest, onPermissionRequest=\(cbState)")
                 if self.pendingRequest != nil {
                     // Another request is already being decided — enqueue.
                     self.requestQueue.append((request, replyHandler))
