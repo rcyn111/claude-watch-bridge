@@ -24,10 +24,19 @@ struct DashboardView: View {
                 }
 
                 // Activity log
-                Section("Last Activity") {
-                    Text(wcSessionManager.lastActivity)
-                        .font(.caption.monospaced())
-                        .foregroundColor(.secondary)
+                Section("Live Log") {
+                    HStack {
+                        Text("SSE")
+                            .font(.caption2).foregroundColor(.gray)
+                        Text(bridgeClient.lastSSE)
+                            .font(.caption.monospaced())
+                    }
+                    HStack {
+                        Text("WCS")
+                            .font(.caption2).foregroundColor(.gray)
+                        Text(wcSessionManager.lastActivity)
+                            .font(.caption.monospaced())
+                    }
                 }
 
                 // Pending requests section

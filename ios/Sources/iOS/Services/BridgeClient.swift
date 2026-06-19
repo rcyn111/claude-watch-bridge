@@ -25,6 +25,7 @@ class BridgeClient: ObservableObject {
     @Published var sessionToken: String?
     @Published var bridgeHost: String = ""
     @Published var bridgePort: Int = 3712
+    @Published var lastSSE: String = "—"
 
     private var listenTask: Task<Void, Never>?
     private var urlSession: URLSession
@@ -149,6 +150,7 @@ class BridgeClient: ObservableObject {
                             if eventType != "heartbeat", !dataBuffer.isEmpty,
                                let data = dataBuffer.data(using: .utf8),
                                let event = try? JSONDecoder().decode(BridgeEvent.self, from: data) {
+                                self.lastSSE = "\(event.type.rawValue)"
                                 self.onEvent?(event)
                             }
                             eventType = ""
