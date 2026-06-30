@@ -1,43 +1,43 @@
 # Claude Watch Bridge
 
-Approve Claude Code permission requests from your Apple Watch.
+在 Apple Watch 上批准 Claude Code 的权限请求。
 
 <p align="center">
-  <img src="docs/watch-mockup.png" alt="Apple Watch Claude Code authorization" width="300"/>
+  <img src="docs/watch-mockup.png" alt="Apple Watch Claude Code 授权" width="300"/>
 </p>
 
-## How It Works
+## 工作原理
 
 ```
-Claude Code (Terminal) ──HTTP──> Bridge Server (Mac) ──WiFi──> iPhone App ──Bluetooth──> Apple Watch
-                                  ▲                              │          ▲
-                                  │◄──── POST /decisions ───────┘          │◄── WCSession
-                                  └─────────────────────────────────────────┘
+Claude Code (终端) ──HTTP──> Bridge Server (Mac) ──WiFi──> iPhone App ──蓝牙──> Apple Watch
+       ▲                          │          ▲
+       │◄──── POST /decisions ───┘          │◄── WCSession
+       └─────────────────────────────────────┘
 ```
 
-When Claude Code needs permission to run a command, read a file, or make an edit, it sends an HTTP request to the Bridge Server on your Mac. The bridge forwards it to your iPhone, which sends it to your Apple Watch. You tap **Approve** or **Deny** on your wrist, and the decision travels back — all within seconds.
+当 Claude Code 需要权限执行命令、读取文件或编辑代码时，会发送 HTTP 请求到你 Mac 上的 Bridge Server。桥接服务器转发到 iPhone，iPhone 再传到 Apple Watch。你在手腕上点按**批准**或**拒绝**，决策在几秒内回传。
 
-## Prerequisites
+## 前提条件
 
-- macOS 14+ (Sonoma or later)
-- iOS 17+ on iPhone
-- watchOS 10+ on Apple Watch
-- Node.js 18+ installed on your Mac
-- All devices on the same Wi-Fi network
+- macOS 14+（Sonoma 或更新）
+- iPhone 需 iOS 17+
+- Apple Watch 需 watchOS 10+
+- Mac 上安装 Node.js 18+
+- 所有设备在同一 Wi-Fi 网络
 
-## Quick Start
+## 快速开始
 
-### 1. Install and start the Bridge Server
+### 1. 安装并启动 Bridge Server
 
-The easiest way is to run it as a launchd agent that **auto-starts on login and stays alive**:
+推荐使用 launchd 守护进程，**开机自动启动、崩溃自动恢复**：
 
 ```bash
-make install        # builds + installs + starts the launchd agent
-make status         # check it's running
-make logs           # tail logs (pretty)
+make install        # 构建 + 安装 + 启动 launchd 守护进程
+make status         # 检查运行状态
+make logs           # 查看日志
 ```
 
-Prefer to run it in the foreground instead?
+如果想在前台运行：
 
 ```bash
 cd bridge
@@ -46,7 +46,7 @@ npm run build
 npm start
 ```
 
-You'll see a 6-digit pairing code in the terminal (only when no device is paired yet):
+没有已配对设备时，终端会显示 6 位配对码：
 
 ```
 ==================================================
@@ -59,166 +59,152 @@ You'll see a 6-digit pairing code in the terminal (only when no device is paired
 ==================================================
 ```
 
-### 2. Configure Claude Code hooks
+### 2. 配置 Claude Code 钩子
 
 ```bash
 make hooks
 ```
 
-This adds the Watch authorization hooks to your `~/.claude/settings.json`.
+这会将 Watch 授权钩子写入 `~/.claude/settings.json`。
 
-### 3. Build and run the iOS app
+### 3. 构建并运行 iOS 应用
 
-Open the Xcode project (requires XcodeGen):
+打开 Xcode 项目（需要 XcodeGen）：
 
 ```bash
 brew install xcodegen
 make ios-open
 ```
 
-Select your iPhone as the target, then build and run. Enter the 6-digit pairing code from the terminal.
+选择你的 iPhone 作为目标，构建并运行。输入终端显示的 6 位配对码。
 
-### 4. Install the Watch app
+### 4. 安装 Watch 应用
 
-In Xcode, select the Watch app scheme and install it on your paired Apple Watch. Or enable "Show App on Apple Watch" in the Watch app on your iPhone.
+在 Xcode 中选择 Watch 应用方案，安装到你已配对的 Apple Watch 上。或在 iPhone 的 Watch 应用中启用"在 Apple Watch 上显示应用"。
 
-### 5. Start using Claude Code
+### 5. 开始使用
 
-That's it! When Claude Code needs permission, you'll feel a tap on your wrist. Approve or deny right from your watch.
+搞定。当 Claude Code 需要权限时，你会感到手腕震动，在手表上批准或拒绝即可。
 
-## Operation
+## 运维
 
-### Always-on (launchd daemon)
+### 守护进程模式
 
-`make install` registers the bridge as a launchd agent that starts on login and
-restarts if it crashes. Pairing sessions are persisted to `~/.claude-watch/sessions.json`,
-so **restarting the bridge (or rebooting) does not require re-pairing** — the iOS
-app reconnects automatically.
+`make install` 将桥接注册为 launchd 守护进程，开机启动、崩溃重启。配对会话持久化在 `~/.claude-watch/sessions.json`，**重启桥接或重启电脑无需重新配对**——iOS 应用会自动重连。
 
-| Command | What it does |
-|---------|--------------|
-| `make install` | Build + install + start the launchd agent |
-| `make uninstall` | Stop and remove the agent |
-| `make restart` | Restart the agent |
-| `make status` | Reachability + health + connection stats |
-| `make logs` | Tail the log (pretty-printed) |
-| `make pair` | Request a fresh pairing code |
-| `make hooks` | Install Claude Code hooks (idempotent) |
-| `make hooks-remove` | Remove the Claude Code hooks |
+| 命令 | 说明 |
+|------|------|
+| `make install` | 构建 + 安装 + 启动守护进程 |
+| `make uninstall` | 停止并移除守护进程 |
+| `make restart` | 重启守护进程 |
+| `make status` | 查看运行状态和连接统计 |
+| `make logs` | 实时查看日志 |
+| `make pair` | 生成新配对码 |
+| `make hooks` | 安装 Claude Code 钩子 |
+| `make hooks-remove` | 移除钩子 |
 
-### Resilience
+### 弹性设计
 
-- **Fail-fast when no device is connected:** if no iPhone/Watch is connected via
-  SSE when a permission request arrives, the bridge returns after a short grace
-  window (`NO_CLIENT_GRACE_SECONDS`, default 3s) instead of blocking Claude Code
-  for the full `HOOK_TIMEOUT`. Set `HOOK_FALLBACK_BEHAVIOR=ask` to have Claude
-  Code fall back to its normal terminal prompt in that case (default `deny`).
-- **Auto-reconnect:** the iOS app streams SSE with exponential backoff and
-  reconnects on any disconnect.
-- **Session isolation:** a `Stop` hook only cancels pending requests for that
-  Claude session, so concurrent sessions don't interfere.
+- **无设备时快速失败**：没有 iPhone/Watch 连接时，权限请求在短暂等待（默认 3 秒）后返回，不会让 Claude Code 一直阻塞。设置 `HOOK_FALLBACK_BEHAVIOR=ask` 可回退到终端提示。
+- **自动重连**：iOS 应用以指数退避策略重连 SSE 流。
+- **会话隔离**：`Stop` 钩子只取消该会话的待处理请求，多会话互不干扰。
 
-## Architecture
+## 架构
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Bridge Server | Node.js + TypeScript + Express | Receives Claude Code hooks, relays to iPhone |
-| iOS Companion App | SwiftUI + WCSession | Bridges HTTP/SSE to Apple Watch |
-| Apple Watch App | SwiftUI (watchOS) | Display permissions and collect decisions |
+| 组件 | 技术 | 用途 |
+|------|------|------|
+| Bridge Server | Node.js + TypeScript + Express | 接收 Claude Code 钩子，转发到 iPhone |
+| iOS 伴侣应用 | SwiftUI + WCSession | HTTP/SSE 与 Apple Watch 之间的桥梁 |
+| Apple Watch 应用 | SwiftUI (watchOS) | 显示权限请求，收集用户决策 |
 
-### API Endpoints
+### API 端点
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health` | Health check |
-| `POST` | `/pair` | Request pairing code |
-| `POST` | `/pair/verify` | Exchange code for session token |
-| `GET` | `/events` | SSE stream (authenticated) |
-| `POST` | `/hook/permission-request` | **Blocking**: wait for Watch decision |
-| `POST` | `/hook/post-tool-use` | Tool usage notification |
-| `POST` | `/hook/stop` | Session ended |
-| `POST` | `/decisions` | Submit approve/deny (authenticated) |
-| `GET` | `/pending` | List pending requests (authenticated) |
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/health` | 健康检查 |
+| `POST` | `/pair` | 请求配对码 |
+| `POST` | `/pair/verify` | 验证配对码，换取会话令牌 |
+| `GET` | `/events` | SSE 事件流（需认证） |
+| `POST` | `/hook/permission-request` | **阻塞等待** Watch 决策 |
+| `POST` | `/hook/post-tool-use` | 工具使用通知 |
+| `POST` | `/hook/stop` | 会话结束 |
+| `POST` | `/decisions` | 提交批准/拒绝（需认证） |
+| `GET` | `/pending` | 列出待处理请求（需认证） |
 
-## Security
+## 安全
 
-- **Local-only**: The bridge binds to `127.0.0.1` by default — no external network exposure
-- **Pairing code**: 6-digit random code, expires in 120 seconds, shown only in the terminal
-- **Bearer token**: 256-bit random token stored in iOS Keychain
-- **No cloud**: All communication stays on your local network
+- **仅本地**：默认绑定 `127.0.0.1`，不暴露到外部网络
+- **配对码**：6 位随机数字，120 秒过期，仅终端显示
+- **Bearer Token**：256 位随机令牌，存储在 iOS Keychain
+- **无云端**：所有通信仅在你本地网络内
 
-## Configuration
+## 配置
 
-Set these environment variables (or create `bridge/.env`):
+在环境变量或 `bridge/.env` 中设置：
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3712` | Bridge HTTP port |
-| `HOST` | `127.0.0.1` | Bridge bind address |
-| `HOOK_TIMEOUT` | `300` | Max seconds to wait for Watch decision |
-| `HOOK_FALLBACK_BEHAVIOR` | `deny` | `deny` blocks the tool on timeout/no-device; `ask` defers to the terminal prompt |
-| `NO_CLIENT_GRACE_SECONDS` | `3` | Grace window before failing a request with no device connected |
-| `PAIRING_CODE_EXPIRY` | `120` | Pairing code validity (seconds) |
-| `PAIR_VERIFY_MAX_ATTEMPTS` | `5` | Max pairing-code guesses per IP per window |
-| `SESSION_TTL` | `604800` | Session token lifetime in seconds (7 days) |
-| `SSE_HEARTBEAT` | `30` | SSE keepalive interval (seconds) |
-| `LOG_LEVEL` | `info` | Logging level (debug/info/warn/error) |
-| `DATA_DIR` | `~/.claude-watch` | Where `sessions.json` and logs are stored |
-| `LOG_FILE` | `~/.claude-watch/bridge.log` | Log file; set to `""` to disable file logging |
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `PORT` | `3712` | 桥接 HTTP 端口 |
+| `HOST` | `127.0.0.1` | 绑定地址 |
+| `HOOK_TIMEOUT` | `300` | 等待 Watch 决策的最长秒数 |
+| `HOOK_FALLBACK_BEHAVIOR` | `deny` | 超时/无设备时的行为：`deny` 拒绝，`ask` 回退到终端 |
+| `NO_CLIENT_GRACE_SECONDS` | `3` | 无设备连接时的等待宽限期 |
+| `PAIRING_CODE_EXPIRY` | `120` | 配对码有效期（秒） |
+| `PAIR_VERIFY_MAX_ATTEMPTS` | `5` | 每 IP 每窗口最大尝试次数 |
+| `SESSION_TTL` | `604800` | 会话令牌有效期（秒，7 天） |
+| `SSE_HEARTBEAT` | `30` | SSE 心跳间隔（秒） |
+| `LOG_LEVEL` | `info` | 日志级别 |
+| `DATA_DIR` | `~/.claude-watch` | 数据存储目录 |
+| `LOG_FILE` | `~/.claude-watch/bridge.log` | 日志文件路径 |
 
-## Development
+## 开发
 
 ```bash
-# Install dependencies
+# 安装依赖
 make setup
 
-# Start bridge in dev mode (hot reload)
+# 开发模式启动（热重载）
 cd bridge && npm run dev
 
-# Run tests
+# 运行测试
 make bridge-test
 
-# Generate Xcode project (requires XcodeGen)
+# 生成 Xcode 项目（需要 XcodeGen）
 brew install xcodegen
 make ios-gen
 
-# Open Xcode
+# 打开 Xcode
 make ios-open
 ```
 
-## Troubleshooting
+## 故障排查
 
-**Check the bridge first:**
+**先检查桥接服务器：**
 ```bash
-make status     # is it running? how many clients/sessions?
-make logs       # watch live logs
+make status     # 运行状态和连接数
+make logs       # 实时日志
 ```
 
-**Watch doesn't show requests:**
-- Ensure iPhone is on the same Wi-Fi as your Mac
-- Check that Watch is connected to iPhone via Bluetooth
-- Verify WCSession status in the iOS app Dashboard
-- Check bridge logs for SSE connection status (`make logs`)
+**Watch 不显示请求：**
+- 确保 iPhone 和 Mac 在同一 Wi-Fi
+- 检查 Apple Watch 是否通过蓝牙连接 iPhone
+- 在 iOS 应用 Dashboard 中查看 WCSession 状态
+- 检查桥接日志中的 SSE 连接状态（`make logs`）
 
-**Claude Code blocks for minutes then denies:**
-- No device was connected. Open the iOS app so it reconnects, or set
-  `HOOK_FALLBACK_BEHAVIOR=ask` so Claude Code falls back to the terminal prompt
-  instead of denying when the watch is unreachable.
+**Claude Code 阻塞很久后拒绝：**
+- 没有设备连接。打开 iOS 应用让它自动重连，或设置 `HOOK_FALLBACK_BEHAVIOR=ask` 回退到终端提示。
 
-**Pairing code expired:**
-- Run `make pair` (or `curl -X POST http://127.0.0.1:3712/pair`) for a new code.
-- You do **not** need to re-pair after restarting the bridge or rebooting —
-  sessions are persisted and the iOS app reconnects automatically.
+**配对码过期：**
+- 运行 `make pair` 获取新码。重启桥接或电脑后无需重新配对——会话已持久化，iOS 应用会自动重连。
 
-**iOS app can't reach the bridge:**
-- The phone must use your **Mac's LAN IP** (e.g. `192.168.1.5`), not `127.0.0.1`
-  (which would refer to the phone itself). The host you enter is saved for next time.
+**iOS 应用连不上桥接：**
+- 手机必须使用你 **Mac 的局域网 IP**（如 `192.168.1.5`），不能用 `127.0.0.1`（那指向手机自己）。填过的地址会自动保存。
 
-**"Not reachable" on iPhone app:**
-- Open the Watch app on your iPhone
-- Ensure the Claude Watch app is installed
-- Keep the iPhone app in the foreground during initial pairing
+**iPhone 上显示"不可达"：**
+- 打开 iPhone 的 Watch 应用
+- 确保安装了 Claude Watch 应用
+- 初次配对时保持 iPhone 应用在前台
 
-## License
+## 许可证
 
 MIT
